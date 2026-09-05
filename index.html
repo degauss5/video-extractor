@@ -8,268 +8,729 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: #0f0f1e;
     color: #eee;
     min-height: 100vh;
-    padding-bottom: 20px;
   }
   
-  /* Header estilo Kodi */
+  /* Header fijo */
   .header {
-    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    border-bottom: 3px solid #e94560;
-  }
-  .header h1 {
-    font-size: 1.8em;
-    color: #ffd700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    margin-bottom: 5px;
-  }
-  .header p {
-    color: #a0a0a0;
-    font-size: 0.9em;
-  }
-  
-  /* Contenedor principal */
-  .container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 0 15px;
-  }
-  
-  /* Secciones del menú principal */
-  .section-title {
-    color: #ffd700;
-    font-size: 1.3em;
-    margin: 25px 0 15px 0;
-    padding-left: 10px;
-    border-left: 4px solid #e94560;
-  }
-  
-  /* Grid de canales */
-  .channels-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 15px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    border-bottom: 3px solid #ffd700;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
     gap: 15px;
-    margin-bottom: 30px;
+  }
+  .back-btn {
+    background: #e94560;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .back-btn.visible { display: flex; }
+  .back-btn:active { opacity: 0.7; }
+  .header h1 {
+    font-size: 1.4em;
+    color: #ffd700;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    flex: 1;
   }
   
-  /* Tarjeta de canal */
-  .channel-card {
+  /* Breadcrumb */
+  .breadcrumb {
+    background: #16213e;
+    padding: 10px 20px;
+    font-size: 0.85em;
+    color: #a0a0a0;
+    border-bottom: 1px solid #0f3460;
+  }
+  .breadcrumb span { color: #ffd700; cursor: pointer; }
+  .breadcrumb span:hover { text-decoration: underline; }
+  
+  /* Contenedor */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 15px;
+  }
+  
+  /* ===== MENÚ PRINCIPAL ===== */
+  .main-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  .main-card {
     background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
     border-radius: 12px;
-    padding: 15px;
+    padding: 25px 15px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s;
     border: 2px solid transparent;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
   }
-  .channel-card:hover {
+  .main-card:hover {
     transform: translateY(-5px);
-    border-color: #e94560;
-    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.3);
+    border-color: #ffd700;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
   }
-  .channel-card:active {
-    transform: scale(0.95);
+  .main-card:active { transform: scale(0.95); }
+  .main-card .icon { font-size: 3.5em; margin-bottom: 10px; display: block; }
+  .main-card .label {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
-  .channel-icon {
-    font-size: 3em;
-    margin-bottom: 10px;
-    display: block;
+  
+  /* ===== SUBMENÚ (Opciones dentro de categoría) ===== */
+  .submenu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
   }
-  .channel-name {
-    font-size: 0.95em;
-    font-weight: 600;
+  .sub-card {
+    background: #16213e;
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 4px solid #e94560;
+  }
+  .sub-card:hover {
+    background: #1f2a40;
+    transform: translateX(5px);
+  }
+  .sub-card h3 {
+    font-size: 1em;
     color: #eee;
     margin-bottom: 5px;
   }
-  .channel-desc {
-    font-size: 0.75em;
+  .sub-card p {
+    font-size: 0.8em;
     color: #a0a0a0;
   }
   
-  /* Botón de búsqueda */
-  .search-btn {
-    background: linear-gradient(135deg, #e94560 0%, #c73650 100%);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: 600;
+  /* ===== LISTA DE CONTENIDO (pelis/series) ===== */
+  .content-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+  .content-item {
+    background: #16213e;
+    border-radius: 10px;
+    overflow: hidden;
     cursor: pointer;
-    width: 100%;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
     transition: all 0.2s;
   }
-  .search-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
+  .content-item:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
   }
-  .search-btn:active {
-    transform: scale(0.98);
+  .poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    color: #ffd700;
+  }
+  .content-info {
+    padding: 10px;
+  }
+  .content-info h4 {
+    font-size: 0.9em;
+    color: #eee;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .content-info .meta {
+    font-size: 0.75em;
+    color: #a0a0a0;
+  }
+  .quality-badge {
+    display: inline-block;
+    background: #e94560;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7em;
+    margin-top: 4px;
   }
   
-  /* Footer */
-  .footer {
-    text-align: center;
+  /* ===== LISTA DE ENLACES ===== */
+  .content-header {
+    background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
     padding: 20px;
-    color: #666;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .content-header h2 {
+    color: #ffd700;
+    font-size: 1.4em;
+    margin-bottom: 8px;
+  }
+  .content-header .plot {
+    color: #a0a0a0;
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+  .links-section-title {
+    color: #e94560;
+    font-size: 1.1em;
+    margin: 20px 0 10px 0;
+    padding-left: 10px;
+    border-left: 4px solid #e94560;
+  }
+  .link-card {
+    background: #16213e;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .link-card:hover {
+    border-color: #ffd700;
+    background: #1f2a40;
+  }
+  .server-icon {
+    width: 50px;
+    height: 50px;
+    background: #0f3460;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    flex-shrink: 0;
+  }
+  .link-info { flex: 1; }
+  .link-info .server-name {
+    font-weight: 700;
+    color: #ffd700;
+    font-size: 1em;
+    margin-bottom: 4px;
+  }
+  .link-info .link-meta {
     font-size: 0.8em;
-    margin-top: 40px;
+    color: #a0a0a0;
+  }
+  .link-info .link-meta span {
+    display: inline-block;
+    background: #0f3460;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
+    margin-top: 3px;
+  }
+  .play-btn {
+    background: #e94560;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .play-btn:hover { background: #c73650; }
+  .play-btn:active { transform: scale(0.95); }
+  
+  /* ===== BÚSQUEDA ===== */
+  .search-container {
+    margin-bottom: 20px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 15px;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 10px;
+    color: #eee;
+    font-size: 1em;
+  }
+  .search-input:focus {
+    outline: none;
+    border-color: #ffd700;
+  }
+  
+  /* ===== UTILIDADES ===== */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0a0a0;
+  }
+  .empty-state .icon { font-size: 4em; margin-bottom: 15px; }
+  
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #a0a0a0;
   }
   
   /* Responsive */
   @media (max-width: 600px) {
-    .channels-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .channel-icon {
-      font-size: 2.5em;
-    }
-    .header h1 {
-      font-size: 1.5em;
-    }
+    .main-menu { grid-template-columns: repeat(2, 1fr); }
+    .main-card { padding: 20px 10px; }
+    .main-card .icon { font-size: 2.5em; }
+    .main-card .label { font-size: 0.9em; }
+    .content-list { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .link-card { flex-direction: column; text-align: center; }
   }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>🎬 Palantir 3</h1>
-  <p>Visualiza el contenido de la nube</p>
+  <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+  <h1 id="pageTitle">🎬 Palantir 3</h1>
 </div>
 
-<div class="container">
-  
-  <!-- Botón de búsqueda global -->
-  <button class="search-btn" onclick="alert('Búsqueda global - Próximamente')">
-    🔍 Buscar en todos los canales
-  </button>
-  
-  <!-- Sección: Películas -->
-  <h2 class="section-title">🎬 Películas</h2>
-  <div class="channels-grid">
-    <div class="channel-card" onclick="openChannel('cuevana')">
-      <span class="channel-icon">🎥</span>
-      <div class="channel-name">Cuevana</div>
-      <div class="channel-desc">Estrenos y clásicos</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('pelisplus')">
-      <span class="channel-icon">📽️</span>
-      <div class="channel-name">PelisPlus</div>
-      <div class="channel-desc">Películas HD</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('hdfull')">
-      <span class="channel-icon">🎞️</span>
-      <div class="channel-name">HD Full</div>
-      <div class="channel-desc">Alta definición</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('cinecalidad')">
-      <span class="channel-icon">🎬</span>
-      <div class="channel-name">CineCalidad</div>
-      <div class="channel-desc">Calidad premium</div>
-    </div>
-  </div>
-  
-  <!-- Sección: Series -->
-  <h2 class="section-title">📺 Series</h2>
-  <div class="channels-grid">
-    <div class="channel-card" onclick="openChannel('seriesblanco')">
-      <span class="channel-icon">📺</span>
-      <div class="channel-name">SeriesBlanco</div>
-      <div class="channel-desc">Series completas</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('serieslan')">
-      <span class="channel-icon">🎭</span>
-      <div class="channel-name">SeriesLAN</div>
-      <div class="channel-desc">Series latino</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('elitetorrent')">
-      <span class="channel-icon">🎪</span>
-      <div class="channel-name">EliteTorrent</div>
-      <div class="channel-desc">Torrents</div>
-    </div>
-  </div>
-  
-  <!-- Sección: Anime -->
-  <h2 class="section-title">🎌 Anime</h2>
-  <div class="channels-grid">
-    <div class="channel-card" onclick="openChannel('animeflv')">
-      <span class="channel-icon">🎌</span>
-      <div class="channel-name">AnimeFLV</div>
-      <div class="channel-desc">Anime en español</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('monoschinos')">
-      <span class="channel-icon">🐵</span>
-      <div class="channel-name">MonosChinos</div>
-      <div class="channel-desc">Anime subtitulado</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('jkanime')">
-      <span class="channel-icon">⚡</span>
-      <div class="channel-name">JKAnime</div>
-      <div class="channel-desc">Últimos episodios</div>
-    </div>
-  </div>
-  
-  <!-- Sección: Documentales -->
-  <h2 class="section-title">📚 Documentales</h2>
-  <div class="channels-grid">
-    <div class="channel-card" onclick="openChannel('documentaleson')">
-      <span class="channel-icon">📚</span>
-      <div class="channel-name">DocumentalesON</div>
-      <div class="channel-desc">Docs online</div>
-    </div>
-    <div class="channel-card" onclick="openChannel('documania')">
-      <span class="channel-icon">🎓</span>
-      <div class="channel-name">DocuManía</div>
-      <div class="channel-desc">Educación</div>
-    </div>
-  </div>
-  
-  <!-- Sección: Configuración -->
-  <h2 class="section-title">⚙️ Configuración</h2>
-  <div class="channels-grid">
-    <div class="channel-card" onclick="openSettings()">
-      <span class="channel-icon">⚙️</span>
-      <div class="channel-name">Ajustes</div>
-      <div class="channel-desc">Configuración</div>
-    </div>
-    <div class="channel-card" onclick="openHelp()">
-      <span class="channel-icon">❓</span>
-      <div class="channel-name">Ayuda</div>
-      <div class="channel-desc">Información</div>
-    </div>
-  </div>
-  
-</div>
+<div class="breadcrumb" id="breadcrumb"></div>
 
-<div class="footer">
-  <p>Clone de Palantir 3 - Solo para fines educativos</p>
-  <p>Versión 1.0</p>
-</div>
+<div class="container" id="view"></div>
 
 <script>
-// Funciones de navegación (las implementaremos en el siguiente paso)
-function openChannel(channelId) {
-  alert(`Abriendo canal: ${channelId}\n\nPróximamente implementaremos la navegación a la página del canal.`);
-  // Aquí iremos a la página del canal específico
-  // window.location.href = `channel.html?id=${channelId}`;
+// ============================================
+// DATOS DE EJEMPLO (mock data)
+// En el siguiente paso conectaremos con scraping real
+// ============================================
+const MOCK_DATA = {
+  movies: {
+    recent: [
+      { id: 'm1', title: 'Dune: Parte Dos', year: 2024, quality: 'HD', plot: 'Paul Atreides se une a los Fremen para vengar la muerte de su familia.' },
+      { id: 'm2', title: 'Oppenheimer', year: 2023, quality: '4K', plot: 'La historia del padre de la bomba atómica.' },
+      { id: 'm3', title: 'Pobres Criaturas', year: 2024, quality: 'HD', plot: 'Una mujer es resucitada por un científico.' },
+      { id: 'm4', title: 'La Sociedad de la Nieve', year: 2024, quality: 'HD', plot: 'La historia real de los sobrevivientes de los Andes.' },
+      { id: 'm5', title: 'Godzilla x Kong', year: 2024, quality: 'HD', plot: 'Los dos titanes unen fuerzas.' },
+      { id: 'm6', title: 'Kung Fu Panda 4', year: 2024, quality: 'HD', plot: 'Po busca un nuevo guerrero dragón.' }
+    ],
+    popular: [
+      { id: 'm7', title: 'El Padrino', year: 1972, quality: 'HD', plot: 'La historia de la familia Corleone.' },
+      { id: 'm8', title: 'Pulp Fiction', year: 1994, quality: 'HD', plot: 'Historias entrelazadas de criminales.' },
+      { id: 'm9', title: 'Matrix', year: 1999, quality: '4K', plot: 'Un hacker descubre la verdad sobre la realidad.' },
+      { id: 'm10', title: 'Interestelar', year: 2014, quality: '4K', plot: 'Un grupo viaja a través de un agujero de gusano.' }
+    ],
+    genre_action: [
+      { id: 'm11', title: 'John Wick 4', year: 2023, quality: 'HD', plot: 'John Wick descubre un camino para derrotar a la Alta Mesa.' },
+      { id: 'm12', title: 'Misión Imposible 7', year: 2023, quality: 'HD', plot: 'Ethan Hunt enfrenta su misión más peligrosa.' }
+    ]
+  },
+  series: {
+    recent: [
+      { id: 's1', title: 'The Last of Us', year: 2023, quality: 'HD', plot: 'Un sobreviviente escolta a una joven a través de un EEUU post-apocalíptico.' },
+      { id: 's2', title: 'House of the Dragon', year: 2024, quality: '4K', plot: 'La guerra civil de la casa Targaryen.' },
+      { id: 's3', title: 'Shogun', year: 2024, quality: 'HD', plot: 'Japón feudal en el siglo XVII.' }
+    ],
+    popular: [
+      { id: 's4', title: 'Breaking Bad', year: 2008, quality: 'HD', plot: 'Un profesor de química se convierte en fabricante de metanfetamina.' },
+      { id: 's5', title: 'Juego de Tronos', year: 2011, quality: 'HD', plot: 'Nobles familias luchan por el control de los Siete Reinos.' }
+    ]
+  },
+  anime: {
+    recent: [
+      { id: 'a1', title: 'Attack on Titan', year: 2023, quality: 'HD', plot: 'La batalla final contra los titanes.' },
+      { id: 'a2', title: 'Jujutsu Kaisen', year: 2024, quality: 'HD', plot: 'Hechiceros luchan contra maldiciones.' },
+      { id: 'a3', title: 'One Piece', year: 2024, quality: 'HD', plot: 'Las aventuras de Luffy y su tripulación.' }
+    ]
+  },
+  docs: {
+    recent: [
+      { id: 'd1', title: 'Planeta Tierra III', year: 2023, quality: '4K', plot: 'Maravillas naturales del planeta.' },
+      { id: 'd2', title: 'Nuestro Universo', year: 2024, quality: '4K', plot: 'Explorando el cosmos.' }
+    ]
+  }
+};
+
+// Enlaces de ejemplo para cada contenido
+const MOCK_LINKS = {
+  'm1': [
+    { server: 'Cuevana', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/dune-cuevana.mp4' },
+    { server: 'PelisPlus', icon: '📽️', quality: '1080p', lang: 'LAT', type: 'mp4', url: 'https://ejemplo.com/dune-pelisplus.mp4' },
+    { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:EJEMPLODUNE' }
+  ],
+  'm2': [
+    { server: 'Cuevana', icon: '🎥', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/opp-cuevana.mp4' },
+    { server: 'HD Full', icon: '🎞️', quality: '4K', lang: 'VOS', type: 'mp4', url: 'https://ejemplo.com/opp-hdfull.mp4' }
+  ],
+  'm9': [
+    { server: 'Cuevana', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/matrix-cuevana.mp4' },
+    { server: 'CineCalidad', icon: '🎬', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/matrix-cinecalidad.mp4' },
+    { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:EJEMPLOMATRIX' }
+  ]
+};
+
+// Generar enlaces por defecto para cualquier contenido
+function getLinksFor(contentId) {
+  if (MOCK_LINKS[contentId]) return MOCK_LINKS[contentId];
+  return [
+    { server: 'Cuevana', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: `https://ejemplo.com/${contentId}-cuevana.mp4` },
+    { server: 'PelisPlus', icon: '📽️', quality: '720p', lang: 'LAT', type: 'mp4', url: `https://ejemplo.com/${contentId}-pelisplus.mp4` },
+    { server: 'Torrent', icon: '🧲', quality: '1080p', lang: 'CAST', type: 'torrent', url: `magnet:?xt=urn:btih:EJEMPLO${contentId.toUpperCase()}` }
+  ];
 }
 
-function openSettings() {
-  alert('Página de configuración - Próximamente');
+// ============================================
+// SISTEMA DE NAVEGACIÓN
+// ============================================
+let history = [];
+let currentView = { type: 'main' };
+
+function navigate(view) {
+  history.push(currentView);
+  currentView = view;
+  render();
 }
 
-function openHelp() {
-  alert('Página de ayuda - Próximamente');
+function goBack() {
+  if (history.length > 0) {
+    currentView = history.pop();
+    render();
+  }
 }
+
+function goHome() {
+  history = [];
+  currentView = { type: 'main' };
+  render();
+}
+
+// ============================================
+// RENDERIZADO
+// ============================================
+function render() {
+  const view = document.getElementById('view');
+  const title = document.getElementById('pageTitle');
+  const breadcrumb = document.getElementById('breadcrumb');
+  const backBtn = document.getElementById('backBtn');
+  
+  backBtn.classList.toggle('visible', history.length > 0);
+  
+  switch (currentView.type) {
+    case 'main': renderMain(view, title, breadcrumb); break;
+    case 'category': renderCategory(view, title, breadcrumb); break;
+    case 'list': renderList(view, title, breadcrumb); break;
+    case 'content': renderContent(view, title, breadcrumb); break;
+    case 'search': renderSearch(view, title, breadcrumb); break;
+  }
+  
+  window.scrollTo(0, 0);
+}
+
+function renderMain(view, title, breadcrumb) {
+  title.textContent = '🎬 Palantir 3';
+  breadcrumb.innerHTML = '🏠 Inicio';
+  
+  view.innerHTML = `
+    <div class="main-menu">
+      <div class="main-card" onclick="navigate({type:'category', cat:'movies', label:'Películas'})">
+        <span class="icon">🎬</span>
+        <div class="label">Películas</div>
+      </div>
+      <div class="main-card" onclick="navigate({type:'category', cat:'series', label:'Series'})">
+        <span class="icon">📺</span>
+        <div class="label">Series</div>
+      </div>
+      <div class="main-card" onclick="navigate({type:'category', cat:'anime', label:'Anime'})">
+        <span class="icon">🎌</span>
+        <div class="label">Anime</div>
+      </div>
+      <div class="main-card" onclick="navigate({type:'category', cat:'docs', label:'Documentales'})">
+        <span class="icon">📚</span>
+        <div class="label">Documentales</div>
+      </div>
+      <div class="main-card" onclick="navigate({type:'search'})">
+        <span class="icon">🔍</span>
+        <div class="label">Buscar</div>
+      </div>
+      <div class="main-card" onclick="alert('Próximamente: Canales')">
+        <span class="icon">📡</span>
+        <div class="label">Canales</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCategory(view, title, breadcrumb) {
+  const cat = currentView.cat;
+  const label = currentView.label;
+  title.textContent = label;
+  breadcrumb.innerHTML = `<span onclick="goHome()">🏠 Inicio</span> › ${label}`;
+  
+  const options = {
+    movies: [
+      { id: 'search', icon: '🔍', name: 'Buscar películas', desc: 'Encuentra cualquier película' },
+      { id: 'recent', icon: '🆕', name: 'Novedades', desc: 'Últimas añadidas' },
+      { id: 'popular', icon: '⭐', name: 'Más populares', desc: 'Las más vistas' },
+      { id: 'genre_action', icon: '💥', name: 'Acción', desc: 'Películas de acción' },
+      { id: 'genre_drama', icon: '🎭', name: 'Drama', desc: 'Películas dramáticas' },
+      { id: 'genre_scifi', icon: '🚀', name: 'Ciencia Ficción', desc: 'Sci-Fi y fantasía' }
+    ],
+    series: [
+      { id: 'search', icon: '🔍', name: 'Buscar series', desc: 'Encuentra cualquier serie' },
+      { id: 'recent', icon: '🆕', name: 'Novedades', desc: 'Nuevos episodios' },
+      { id: 'popular', icon: '⭐', name: 'Más populares', desc: 'Las más vistas' }
+    ],
+    anime: [
+      { id: 'search', icon: '🔍', name: 'Buscar anime', desc: 'Encuentra cualquier anime' },
+      { id: 'recent', icon: '🆕', name: 'Últimos episodios', desc: 'Recién emitidos' }
+    ],
+    docs: [
+      { id: 'search', icon: '🔍', name: 'Buscar documentales', desc: 'Encuentra cualquier documental' },
+      { id: 'recent', icon: '🆕', name: 'Novedades', desc: 'Últimos añadidos' }
+    ]
+  };
+  
+  let html = '<div class="submenu">';
+  options[cat].forEach(opt => {
+    const action = opt.id === 'search' 
+      ? `navigate({type:'search', cat:'${cat}', label:'${label}'})`
+      : `navigate({type:'list', cat:'${cat}', listId:'${opt.id}', label:'${opt.name}'})`;
+    html += `
+      <div class="sub-card" onclick="${action}">
+        <h3>${opt.icon} ${opt.name}</h3>
+        <p>${opt.desc}</p>
+      </div>
+    `;
+  });
+  html += '</div>';
+  
+  view.innerHTML = html;
+}
+
+function renderList(view, title, breadcrumb) {
+  const cat = currentView.cat;
+  const listId = currentView.listId;
+  const label = currentView.label;
+  const parentLabel = getCatLabel(cat);
+  
+  title.textContent = label;
+  breadcrumb.innerHTML = `<span onclick="goHome()">🏠 Inicio</span> › <span onclick="goBack()">${parentLabel}</span> › ${label}`;
+  
+  const items = MOCK_DATA[cat]?.[listId] || [];
+  
+  if (items.length === 0) {
+    view.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📭</div>
+        <p>No hay contenido disponible en esta sección</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '<div class="content-list">';
+  items.forEach(item => {
+    html += `
+      <div class="content-item" onclick="navigate({type:'content', contentId:'${item.id}', cat:'${cat}'})">
+        <div class="poster">🎬</div>
+        <div class="content-info">
+          <h4>${item.title}</h4>
+          <div class="meta">${item.year}</div>
+          <span class="quality-badge">${item.quality}</span>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  
+  view.innerHTML = html;
+}
+
+function renderContent(view, title, breadcrumb) {
+  const contentId = currentView.contentId;
+  const cat = currentView.cat;
+  
+  // Buscar el contenido en todas las listas de la categoría
+  let content = null;
+  for (const listId in MOCK_DATA[cat]) {
+    const found = MOCK_DATA[cat][listId].find(i => i.id === contentId);
+    if (found) { content = found; break; }
+  }
+  
+  if (!content) {
+    view.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Contenido no encontrado</p></div>';
+    return;
+  }
+  
+  const parentLabel = getCatLabel(cat);
+  title.textContent = content.title;
+  breadcrumb.innerHTML = `<span onclick="goHome()">🏠 Inicio</span> › <span onclick="goToCategoryFromContent()">${parentLabel}</span> › ${content.title}`;
+  
+  const links = getLinksFor(contentId);
+  
+  // Separar enlaces por tipo
+  const directLinks = links.filter(l => l.type === 'mp4');
+  const torrentLinks = links.filter(l => l.type === 'torrent');
+  
+  let html = `
+    <div class="content-header">
+      <h2>${content.title}</h2>
+      <div class="plot">${content.plot}</div>
+      <div style="margin-top: 10px;">
+        <span class="quality-badge">${content.year}</span>
+        <span class="quality-badge">${content.quality}</span>
+      </div>
+    </div>
+  `;
+  
+  if (directLinks.length > 0) {
+    html += '<h3 class="links-section-title">🎬 Enlaces Directos</h3>';
+    directLinks.forEach(link => {
+      html += renderLinkCard(link);
+    });
+  }
+  
+  if (torrentLinks.length > 0) {
+    html += '<h3 class="links-section-title">🧲 Torrents / Magnets</h3>';
+    torrentLinks.forEach(link => {
+      html += renderLinkCard(link);
+    });
+  }
+  
+  view.innerHTML = html;
+}
+
+function renderLinkCard(link) {
+  return `
+    <div class="link-card">
+      <div class="server-icon">${link.icon}</div>
+      <div class="link-info">
+        <div class="server-name">${link.server}</div>
+        <div class="link-meta">
+          <span>📺 ${link.quality}</span>
+          <span>🌍 ${link.lang}</span>
+          <span>📁 ${link.type.toUpperCase()}</span>
+        </div>
+      </div>
+      <button class="play-btn" onclick="playLink('${link.url}')">▶ Reproducir</button>
+    </div>
+  `;
+}
+
+function renderSearch(view, title, breadcrumb) {
+  const cat = currentView.cat;
+  const label = currentView.label || 'Buscar';
+  
+  title.textContent = '🔍 Buscar';
+  breadcrumb.innerHTML = `<span onclick="goHome()">🏠 Inicio</span> › ${label} › Buscar`;
+  
+  view.innerHTML = `
+    <div class="search-container">
+      <input type="text" class="search-input" id="searchInput" placeholder="Escribe el nombre de una película o serie..." onkeypress="if(event.key==='Enter') doSearch()">
+    </div>
+    <div id="searchResults"></div>
+  `;
+  
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+
+function doSearch() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const resultsDiv = document.getElementById('searchResults');
+  
+  if (!query) {
+    resultsDiv.innerHTML = '';
+    return;
+  }
+  
+  // Buscar en todas las categorías
+  const results = [];
+  for (const cat in MOCK_DATA) {
+    for (const listId in MOCK_DATA[cat]) {
+      MOCK_DATA[cat][listId].forEach(item => {
+        if (item.title.toLowerCase().includes(query)) {
+          results.push({ ...item, cat });
+        }
+      });
+    }
+  }
+  
+  if (results.length === 0) {
+    resultsDiv.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>No se encontraron resultados para "${query}"</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = `<p style="margin-bottom: 15px; color: #a0a0a0;">${results.length} resultado(s) para "${query}"</p>`;
+  html += '<div class="content-list">';
+  results.forEach(item => {
+    html += `
+      <div class="content-item" onclick="navigate({type:'content', contentId:'${item.id}', cat:'${item.cat}'})">
+        <div class="poster">🎬</div>
+        <div class="content-info">
+          <h4>${item.title}</h4>
+          <div class="meta">${item.year}</div>
+          <span class="quality-badge">${item.quality}</span>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  
+  resultsDiv.innerHTML = html;
+}
+
+// ============================================
+// UTILIDADES
+// ============================================
+function getCatLabel(cat) {
+  const labels = { movies: '🎬 Películas', series: '📺 Series', anime: '🎌 Anime', docs: '📚 Documentales' };
+  return labels[cat] || cat;
+}
+
+function goToCategoryFromContent() {
+  // Volver dos pasos atrás (a la categoría)
+  if (history.length >= 2) {
+    const catView = history[history.length - 2];
+    if (catView.type === 'category') {
+      currentView = catView;
+      history.pop();
+      render();
+      return;
+    }
+  }
+  goBack();
+}
+
+function playLink(url) {
+  if (url.startsWith('magnet:')) {
+    alert('🧲 Enlace Torrent:\n\n' + url + '\n\nEste enlace se abriría con Elementum o tu cliente torrent.');
+  } else {
+    alert('▶ Reproduciendo:\n\n' + url + '\n\nEn la versión final, esto abriría el reproductor de Kodi o del navegador.');
+  }
+}
+
+// ============================================
+// INICIO
+// ============================================
+render();
 </script>
 
 </body>

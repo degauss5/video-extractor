@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Extractor de Enlaces de Video</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 15px;
+    color: #333;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+  h1 {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #4a5568;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-size: 0.95em;
+  }
+  input[type="url"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    transition: border 0.2s;
+  }
+  input[type="url"]:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    text-align: center;
+    display: none;
+  }
+  .status.loading { background: #fef3c7; color: #92400e; display: block; }
+  .status.success { background: #d1fae5; color: #065f46; display: block; }
+  .status.error { background: #fee2e2; color: #991b1b; display: block; }
+  .results {
+    margin-top: 20px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .link-item {
+    background: #f7fafc;
+    border-left: 4px solid #667eea;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  .link-item a {
+    color: #2b6cb0;
+    text-decoration: none;
+  }
+  .link-item a:active { text-decoration: underline; }
+  .counter {
+    font-size: 0.85em;
+    color: #718096;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎬 Extractor de Enlaces de Video</h1>
+  
+  <label for="urlInput">Introduce la URL de la página:</label>
+  <input type="url" id="urlInput" placeholder="https://ejemplo.com/episodio" autocomplete="off">
+  
+  <button id="extractBtn" onclick="extractLinks()">🔍 Extraer Enlaces</button>
+  
+  <div id="status" class="status"></div>
+  <div id="counter" class="counter"></div>
+  <div id="results" class="results"></div>
+</div>
+
+<script>
+async function extractLinks() {
+  const url = document.getElementById('urlInput').value.trim();
+  const btn = document.getElementById('extractBtn');
+  const status = document.getElementById('status');
+  const results = document.getElementById('results');
+  const counter = document.getElementById('counter');
+  
+  if (!url) {
+    status.className = 'status error';
+    status.textContent = '⚠️ Introduce una URL válida';
+    return;
+  }
+  
+  // Reset
+  results.innerHTML = '';
+  counter.textContent = '';
+  btn.disabled = true;
+  status.className = 'status loading';
+  status.textContent = '⏳ Conectando y analizando la página...';
+  
+  try {
+    // Usamos un proxy CORS para poder hacer la petición desde el navegador
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+    const response = await fetch(proxyUrl);
+    
+    if (!response.ok) throw new Error('No se pudo acceder a la página');
+    
+    const html = await response.text();
+    
+    // Regex para buscar enlaces .mp4 y .m3u8
+    const regex = /(https?:\/\/[^\s"'<>\\]+?\.(?:mp4|m3u8|webm|mkv)[^\s"'<>\\]*)/gi;
+    const matches = html.match(regex) || [];
+    
+    // Eliminar duplicados
+    const uniqueLinks = [...new Set(matches)];
+    
+    if (uniqueLinks.length === 0) {
+      status.className = 'status error';
+      status.textContent = '❌ No se encontraron enlaces de video directos. La página puede usar reproductores embebidos.';
+      btn.disabled = false;
+      return;
+    }
+    
+    // Mostrar resultados
+    counter.textContent = `✅ ${uniqueLinks.length} enlace(s) encontrado(s)`;
+    status.className = 'status success';
+    status.textContent = '✅ Extracción completada';
+    
+    uniqueLinks.forEach((link, i) => {
+      const div = document.createElement('div');
+      div.className = 'link-item';
+      div.innerHTML = `<strong>[${i+1}]</strong> <a href="${link}" target="_blank" rel="noopener">${link}</a>`;
+      results.appendChild(div);
+    });
+    
+  } catch (err) {
+    status.className = 'status error';
+    status.textContent = '❌ Error: ' + err.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Permitir pulsar Enter para buscar
+document.getElementById('urlInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') extractLinks();
+});
+</script>
+</body>
+</html>

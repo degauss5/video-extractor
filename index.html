@@ -3,184 +3,397 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 Extractor de Enlaces de Video</title>
+<title>🎬 Video Extractor - Estilo Kodi</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1a1a2e;
+    color: #eee;
     min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
     padding: 15px;
-    color: #333;
-  }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  }
-  h1 {
-    font-size: 1.4em;
-    margin-bottom: 15px;
     text-align: center;
-    color: #4a5568;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-  label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #4a5568;
-    font-size: 0.95em;
+  .header h1 { font-size: 1.3em; color: #e94560; }
+  .breadcrumb {
+    background: #16213e;
+    padding: 10px 15px;
+    font-size: 0.85em;
+    color: #a0a0a0;
+    border-bottom: 1px solid #0f3460;
   }
-  input[type="url"] {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e2e8f0;
+  .breadcrumb span { cursor: pointer; color: #e94560; }
+  .breadcrumb span:hover { text-decoration: underline; }
+  .container { max-width: 800px; margin: 0 auto; padding: 15px; }
+  .menu-item {
+    background: #16213e;
+    margin-bottom: 10px;
+    padding: 15px;
     border-radius: 8px;
-    font-size: 14px;
-    margin-bottom: 15px;
-    transition: border 0.2s;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 4px solid #e94560;
   }
-  input[type="url"]:focus {
-    outline: none;
-    border-color: #667eea;
+  .menu-item:hover {
+    background: #1f2a40;
+    transform: translateX(5px);
   }
-  button {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  .menu-item h3 { font-size: 1.1em; margin-bottom: 5px; }
+  .menu-item p { font-size: 0.85em; color: #a0a0a0; }
+  .content-item {
+    background: #16213e;
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .content-item:hover { background: #1f2a40; }
+  .content-item h4 { font-size: 1em; margin-bottom: 5px; }
+  .content-item .meta { font-size: 0.8em; color: #a0a0a0; }
+  .link-item {
+    background: #0f3460;
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    word-break: break-all;
+    font-size: 0.85em;
+  }
+  .link-item a { color: #4dabf7; text-decoration: none; }
+  .link-item a:active { text-decoration: underline; }
+  .server-tag {
+    display: inline-block;
+    background: #e94560;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    margin-right: 8px;
+  }
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: #a0a0a0;
+  }
+  .loading::after {
+    content: '...';
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+  }
+  .error {
+    background: #d32f2f;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .back-btn {
+    background: #e94560;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
-  }
-  button:active { transform: scale(0.98); }
-  button:disabled { opacity: 0.6; cursor: not-allowed; }
-  .status {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 8px;
+    margin-bottom: 15px;
     font-size: 0.9em;
-    text-align: center;
-    display: none;
   }
-  .status.loading { background: #fef3c7; color: #92400e; display: block; }
-  .status.success { background: #d1fae5; color: #065f46; display: block; }
-  .status.error { background: #fee2e2; color: #991b1b; display: block; }
-  .results {
-    margin-top: 20px;
-    max-height: 50vh;
-    overflow-y: auto;
+  .back-btn:active { opacity: 0.8; }
+  .search-box {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #0f3460;
+    border-radius: 8px;
+    background: #16213e;
+    color: #eee;
+    font-size: 1em;
+    margin-bottom: 15px;
   }
-  .link-item {
-    background: #f7fafc;
-    border-left: 4px solid #667eea;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    font-size: 0.85em;
-    word-break: break-all;
-  }
-  .link-item a {
-    color: #2b6cb0;
-    text-decoration: none;
-  }
-  .link-item a:active { text-decoration: underline; }
-  .counter {
-    font-size: 0.85em;
-    color: #718096;
-    margin-bottom: 10px;
-    text-align: center;
-  }
+  .search-box:focus { outline: none; border-color: #e94560; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>🎬 Extractor de Enlaces de Video</h1>
-  
-  <label for="urlInput">Introduce la URL de la página:</label>
-  <input type="url" id="urlInput" placeholder="https://ejemplo.com/episodio" autocomplete="off">
-  
-  <button id="extractBtn" onclick="extractLinks()">🔍 Extraer Enlaces</button>
-  
-  <div id="status" class="status"></div>
-  <div id="counter" class="counter"></div>
-  <div id="results" class="results"></div>
+
+<div class="header">
+  <h1>🎬 Video Extractor</h1>
+</div>
+
+<div class="breadcrumb" id="breadcrumb"></div>
+
+<div class="container" id="content">
+  <div class="loading">Cargando</div>
 </div>
 
 <script>
-async function extractLinks() {
-  const url = document.getElementById('urlInput').value.trim();
-  const btn = document.getElementById('extractBtn');
-  const status = document.getElementById('status');
-  const results = document.getElementById('results');
-  const counter = document.getElementById('counter');
-  
-  if (!url) {
-    status.className = 'status error';
-    status.textContent = '⚠️ Introduce una URL válida';
-    return;
+// ============================================
+// CONFIGURACIÓN DE CANALES
+// Aquí defines los canales y su lógica de scraping
+// ============================================
+const CHANNELS = {
+  'documentales': {
+    name: '📺 Documentales Online',
+    description: 'Documentales gratuitos en español',
+    icon: '📺',
+    categories: [
+      { id: 'recent', name: '🆕 Recientes', action: 'list_recent' },
+      { id: 'popular', name: '⭐ Populares', action: 'list_popular' },
+      { id: 'nature', name: '🌿 Naturaleza', action: 'list_category', url: 'https://www.docu-online.com/category/naturaleza/' },
+      { id: 'history', name: '📜 Historia', action: 'list_category', url: 'https://www.docu-online.com/category/historia/' }
+    ]
+  },
+  'peliculasclasicas': {
+    name: '🎬 Películas Clásicas',
+    description: 'Cine clásico de dominio público',
+    icon: '🎬',
+    categories: [
+      { id: 'all', name: '📽️ Todas las películas', action: 'list_all' },
+      { id: 'action', name: '💥 Acción', action: 'list_category', url: 'https://archive.org/details/movies&and[]=subject%3A%22action%22' }
+    ]
   }
-  
-  // Reset
-  results.innerHTML = '';
-  counter.textContent = '';
-  btn.disabled = true;
-  status.className = 'status loading';
-  status.textContent = '⏳ Conectando y analizando la página...';
-  
-  try {
-    // Usamos un proxy CORS para poder hacer la petición desde el navegador
-    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-    const response = await fetch(proxyUrl);
-    
-    if (!response.ok) throw new Error('No se pudo acceder a la página');
-    
-    const html = await response.text();
-    
-    // Regex para buscar enlaces .mp4 y .m3u8
-    const regex = /(https?:\/\/[^\s"'<>\\]+?\.(?:mp4|m3u8|webm|mkv)[^\s"'<>\\]*)/gi;
-    const matches = html.match(regex) || [];
-    
-    // Eliminar duplicados
-    const uniqueLinks = [...new Set(matches)];
-    
-    if (uniqueLinks.length === 0) {
-      status.className = 'status error';
-      status.textContent = '❌ No se encontraron enlaces de video directos. La página puede usar reproductores embebidos.';
-      btn.disabled = false;
-      return;
-    }
-    
-    // Mostrar resultados
-    counter.textContent = `✅ ${uniqueLinks.length} enlace(s) encontrado(s)`;
-    status.className = 'status success';
-    status.textContent = '✅ Extracción completada';
-    
-    uniqueLinks.forEach((link, i) => {
-      const div = document.createElement('div');
-      div.className = 'link-item';
-      div.innerHTML = `<strong>[${i+1}]</strong> <a href="${link}" target="_blank" rel="noopener">${link}</a>`;
-      results.appendChild(div);
-    });
-    
-  } catch (err) {
-    status.className = 'status error';
-    status.textContent = '❌ Error: ' + err.message;
-  } finally {
-    btn.disabled = false;
+};
+
+// ============================================
+// ESTADO DE NAVEGACIÓN
+// ============================================
+let navigationStack = [];
+let currentState = { level: 'main' };
+
+// ============================================
+// FUNCIONES DE NAVEGACIÓN
+// ============================================
+function navigate(level, data = {}) {
+  navigationStack.push({ ...currentState });
+  currentState = { level, ...data };
+  renderView();
+}
+
+function goBack() {
+  if (navigationStack.length > 0) {
+    currentState = navigationStack.pop();
+    renderView();
   }
 }
 
-// Permitir pulsar Enter para buscar
-document.getElementById('urlInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') extractLinks();
-});
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  let html = '<span onclick="goToRoot()">🏠 Inicio</span>';
+  
+  if (currentState.level === 'channel') {
+    const channel = CHANNELS[currentState.channelId];
+    html += ` › <span>${channel.name}</span>`;
+  } else if (currentState.level === 'category') {
+    const channel = CHANNELS[currentState.channelId];
+    html += ` › <span onclick="navigate('channel', {channelId: '${currentState.channelId}'})">${channel.name}</span>`;
+    html += ` › <span>${currentState.categoryName}</span>`;
+  } else if (currentState.level === 'content') {
+    const channel = CHANNELS[currentState.channelId];
+    html += ` › <span onclick="navigate('channel', {channelId: '${currentState.channelId}'})">${channel.name}</span>`;
+    html += ` › <span onclick="navigate('category', {channelId: '${currentState.channelId}', categoryName: '${currentState.categoryName}'})">${currentState.categoryName}</span>`;
+    html += ` › <span>${currentState.contentTitle}</span>`;
+  }
+  
+  bc.innerHTML = html;
+}
+
+function goToRoot() {
+  navigationStack = [];
+  currentState = { level: 'main' };
+  renderView();
+}
+
+// ============================================
+// RENDERIZADO DE VISTAS
+// ============================================
+async function renderView() {
+  const container = document.getElementById('content');
+  updateBreadcrumb();
+  
+  switch (currentState.level) {
+    case 'main':
+      renderMainMenu(container);
+      break;
+    case 'channel':
+      renderChannelMenu(container, currentState.channelId);
+      break;
+    case 'category':
+      await renderCategoryContent(container, currentState.channelId, currentState.categoryName, currentState.action, currentState.url);
+      break;
+    case 'content':
+      await renderContentLinks(container, currentState.channelId, currentState.contentUrl, currentState.contentTitle);
+      break;
+  }
+}
+
+function renderMainMenu(container) {
+  let html = '';
+  for (const [id, channel] of Object.entries(CHANNELS)) {
+    html += `
+      <div class="menu-item" onclick="navigate('channel', {channelId: '${id}'})">
+        <h3>${channel.name}</h3>
+        <p>${channel.description}</p>
+      </div>
+    `;
+  }
+  container.innerHTML = html;
+}
+
+function renderChannelMenu(container, channelId) {
+  const channel = CHANNELS[channelId];
+  let html = '<button class="back-btn" onclick="goBack()">← Volver</button>';
+  
+  channel.categories.forEach(cat => {
+    html += `
+      <div class="menu-item" onclick="navigate('category', {
+        channelId: '${channelId}',
+        categoryName: '${cat.name}',
+        action: '${cat.action}',
+        url: '${cat.url || ''}'
+      })">
+        <h3>${cat.name}</h3>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+async function renderCategoryContent(container, channelId, categoryName, action, url) {
+  container.innerHTML = '<button class="back-btn" onclick="goBack()">← Volver</button><div class="loading">Cargando contenido</div>';
+  
+  try {
+    const items = await fetchCategoryContent(channelId, action, url);
+    
+    let html = '<button class="back-btn" onclick="goBack()">← Volver</button>';
+    
+    if (items.length === 0) {
+      html += '<div class="error">No se encontró contenido</div>';
+    } else {
+      items.forEach(item => {
+        html += `
+          <div class="content-item" onclick="navigate('content', {
+            channelId: '${channelId}',
+            categoryName: '${categoryName}',
+            contentUrl: '${item.url}',
+            contentTitle: '${item.title.replace(/'/g, "\\'")}'
+          })">
+            <h4>${item.title}</h4>
+            <div class="meta">${item.meta || ''}</div>
+          </div>
+        `;
+      });
+    }
+    
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<button class="back-btn" onclick="goBack()">← Volver</button><div class="error">Error: ${err.message}</div>`;
+  }
+}
+
+async function renderContentLinks(container, channelId, contentUrl, contentTitle) {
+  container.innerHTML = '<button class="back-btn" onclick="goBack()">← Volver</button><div class="loading">Buscando enlaces de video</div>';
+  
+  try {
+    const links = await fetchVideoLinks(channelId, contentUrl);
+    
+    let html = '<button class="back-btn" onclick="goBack()">← Volver</button>';
+    html += `<h3 style="margin-bottom: 15px;">${contentTitle}</h3>`;
+    
+    if (links.length === 0) {
+      html += '<div class="error">No se encontraron enlaces de video</div>';
+    } else {
+      links.forEach(link => {
+        html += `
+          <div class="link-item">
+            <span class="server-tag">${link.server}</span>
+            <a href="${link.url}" target="_blank" rel="noopener">${link.url}</a>
+          </div>
+        `;
+      });
+    }
+    
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<button class="back-btn" onclick="goBack()">← Volver</button><div class="error">Error: ${err.message}</div>`;
+  }
+}
+
+// ============================================
+// FUNCIONES DE SCRAPING (LÓGICA DE CANALES)
+// ============================================
+async function fetchCategoryContent(channelId, action, url) {
+  // Aquí implementas la lógica específica de cada canal
+  // Por ahora, un ejemplo genérico que busca enlaces en la página
+  
+  const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+  const response = await fetch(proxyUrl);
+  const html = await response.text();
+  
+  // Ejemplo: Buscar enlaces de artículos/películas
+  const items = [];
+  const regex = /<a[^>]+href="([^"]+)"[^>]*>([^<]+)<\/a>/gi;
+  let match;
+  
+  while ((match = regex.exec(html)) !== null) {
+    const link = match[1];
+    const title = match[2].trim();
+    
+    // Filtrar solo enlaces relevantes (ajusta según el sitio)
+    if (title.length > 5 && title.length < 100 && link.includes('/')) {
+      items.push({
+        title: title,
+        url: link.startsWith('http') ? link : new URL(link, url).href,
+        meta: ''
+      });
+    }
+    
+    if (items.length >= 20) break; // Limitar a 20 resultados
+  }
+  
+  return items;
+}
+
+async function fetchVideoLinks(channelId, contentUrl) {
+  // Aquí implementas la lógica para extraer enlaces de video
+  // de una página de contenido específica
+  
+  const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(contentUrl);
+  const response = await fetch(proxyUrl);
+  const html = await response.text();
+  
+  const links = [];
+  
+  // Buscar enlaces .mp4, .m3u8, etc.
+  const videoRegex = /(https?:\/\/[^\s"'<>\\]+?\.(?:mp4|m3u8|webm)[^\s"'<>\\]*)/gi;
+  const matches = html.match(videoRegex) || [];
+  
+  matches.forEach(url => {
+    links.push({
+      server: 'Directo',
+      url: url
+    });
+  });
+  
+  // Aquí puedes añadir lógica para servidores específicos
+  // Ejemplo: if (html.includes('streamtape')) { ... }
+  
+  return links;
+}
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+renderView();
 </script>
+
 </body>
 </html>

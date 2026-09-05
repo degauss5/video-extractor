@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 Palantir 3 - Clone</title>
+<title>🎬 Palantir 3 - Simulación Técnica</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -13,7 +13,6 @@
     min-height: 100vh;
   }
   
-  /* Header fijo */
   .header {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     padding: 15px 20px;
@@ -48,7 +47,6 @@
     flex: 1;
   }
   
-  /* Breadcrumb */
   .breadcrumb {
     background: #16213e;
     padding: 10px 20px;
@@ -59,14 +57,12 @@
   .breadcrumb span { color: #ffd700; cursor: pointer; }
   .breadcrumb span:hover { text-decoration: underline; }
   
-  /* Contenedor */
   .container {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px 15px;
   }
   
-  /* ===== MENÚ PRINCIPAL ===== */
   .main-menu {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -97,7 +93,6 @@
     letter-spacing: 1px;
   }
   
-  /* ===== SUBMENÚ (Opciones dentro de categoría) ===== */
   .submenu {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -125,7 +120,6 @@
     color: #a0a0a0;
   }
   
-  /* ===== LISTA DE CONTENIDO (pelis/series) ===== */
   .content-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -175,7 +169,6 @@
     margin-top: 4px;
   }
   
-  /* ===== LISTA DE ENLACES ===== */
   .content-header {
     background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
     padding: 20px;
@@ -193,6 +186,7 @@
     font-size: 0.9em;
     line-height: 1.4;
   }
+  
   .links-section-title {
     color: #e94560;
     font-size: 1.1em;
@@ -200,6 +194,7 @@
     padding-left: 10px;
     border-left: 4px solid #e94560;
   }
+  
   .link-card {
     background: #16213e;
     border-radius: 10px;
@@ -258,10 +253,7 @@
   .play-btn:hover { background: #c73650; }
   .play-btn:active { transform: scale(0.95); }
   
-  /* ===== BÚSQUEDA ===== */
-  .search-container {
-    margin-bottom: 20px;
-  }
+  .search-container { margin-bottom: 20px; }
   .search-input {
     width: 100%;
     padding: 15px;
@@ -276,7 +268,6 @@
     border-color: #ffd700;
   }
   
-  /* ===== UTILIDADES ===== */
   .empty-state {
     text-align: center;
     padding: 40px 20px;
@@ -284,13 +275,28 @@
   }
   .empty-state .icon { font-size: 4em; margin-bottom: 15px; }
   
-  .loading {
-    text-align: center;
-    padding: 40px;
+  .technical-info {
+    background: #1a1a2e;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 0.85em;
     color: #a0a0a0;
   }
+  .technical-info h4 {
+    color: #ffd700;
+    margin-bottom: 10px;
+    font-size: 1em;
+  }
+  .technical-info code {
+    background: #0f3460;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #4dabf7;
+    font-family: 'Courier New', monospace;
+  }
   
-  /* Responsive */
   @media (max-width: 600px) {
     .main-menu { grid-template-columns: repeat(2, 1fr); }
     .main-card { padding: 20px 10px; }
@@ -305,7 +311,7 @@
 
 <div class="header">
   <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
-  <h1 id="pageTitle">🎬 Palantir 3</h1>
+  <h1 id="pageTitle">🎬 Palantir 3 - Simulación</h1>
 </div>
 
 <div class="breadcrumb" id="breadcrumb"></div>
@@ -314,83 +320,109 @@
 
 <script>
 // ============================================
-// DATOS DE EJEMPLO (mock data)
-// En el siguiente paso conectaremos con scraping real
+// DATOS SIMULADOS (replican estructura real de Palantir 3)
 // ============================================
-const MOCK_DATA = {
-  movies: {
-    recent: [
-      { id: 'm1', title: 'Dune: Parte Dos', year: 2024, quality: 'HD', plot: 'Paul Atreides se une a los Fremen para vengar la muerte de su familia.' },
-      { id: 'm2', title: 'Oppenheimer', year: 2023, quality: '4K', plot: 'La historia del padre de la bomba atómica.' },
-      { id: 'm3', title: 'Pobres Criaturas', year: 2024, quality: 'HD', plot: 'Una mujer es resucitada por un científico.' },
-      { id: 'm4', title: 'La Sociedad de la Nieve', year: 2024, quality: 'HD', plot: 'La historia real de los sobrevivientes de los Andes.' },
-      { id: 'm5', title: 'Godzilla x Kong', year: 2024, quality: 'HD', plot: 'Los dos titanes unen fuerzas.' },
-      { id: 'm6', title: 'Kung Fu Panda 4', year: 2024, quality: 'HD', plot: 'Po busca un nuevo guerrero dragón.' }
-    ],
-    popular: [
-      { id: 'm7', title: 'El Padrino', year: 1972, quality: 'HD', plot: 'La historia de la familia Corleone.' },
-      { id: 'm8', title: 'Pulp Fiction', year: 1994, quality: 'HD', plot: 'Historias entrelazadas de criminales.' },
-      { id: 'm9', title: 'Matrix', year: 1999, quality: '4K', plot: 'Un hacker descubre la verdad sobre la realidad.' },
-      { id: 'm10', title: 'Interestelar', year: 2014, quality: '4K', plot: 'Un grupo viaja a través de un agujero de gusano.' }
-    ],
-    genre_action: [
-      { id: 'm11', title: 'John Wick 4', year: 2023, quality: 'HD', plot: 'John Wick descubre un camino para derrotar a la Alta Mesa.' },
-      { id: 'm12', title: 'Misión Imposible 7', year: 2023, quality: 'HD', plot: 'Ethan Hunt enfrenta su misión más peligrosa.' }
+const MOVIES = [
+  {
+    id: 'dune2',
+    title: 'Dune: Parte Dos',
+    year: 2024,
+    plot: 'Paul Atreides se une a los Fremen para vengar la muerte de su familia. Con la ayuda de Chani, debe evitar un futuro terrible.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://streamtape.com/v/example123/dune2.mp4' },
+      { server: 'Doodstream', icon: '📽️', quality: '1080p', lang: 'LAT', type: 'mp4', url: 'https://doodstream.com/e/example456' },
+      { server: 'Okru', icon: '📹', quality: '720p', lang: 'CAST', type: 'mp4', url: 'https://ok.ru/video/example789' },
+      { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:EXAMPLE123DUNE2&dn=Dune.Part.2.2024.2160p' }
     ]
   },
-  series: {
-    recent: [
-      { id: 's1', title: 'The Last of Us', year: 2023, quality: 'HD', plot: 'Un sobreviviente escolta a una joven a través de un EEUU post-apocalíptico.' },
-      { id: 's2', title: 'House of the Dragon', year: 2024, quality: '4K', plot: 'La guerra civil de la casa Targaryen.' },
-      { id: 's3', title: 'Shogun', year: 2024, quality: 'HD', plot: 'Japón feudal en el siglo XVII.' }
-    ],
-    popular: [
-      { id: 's4', title: 'Breaking Bad', year: 2008, quality: 'HD', plot: 'Un profesor de química se convierte en fabricante de metanfetamina.' },
-      { id: 's5', title: 'Juego de Tronos', year: 2011, quality: 'HD', plot: 'Nobles familias luchan por el control de los Siete Reinos.' }
+  {
+    id: 'oppenheimer',
+    title: 'Oppenheimer',
+    year: 2023,
+    plot: 'La historia del físico J. Robert Oppenheimer y su papel en el desarrollo de la bomba atómica durante la Segunda Guerra Mundial.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://streamtape.com/v/example/oppenheimer.mp4' },
+      { server: 'Fembed', icon: '🎞️', quality: '4K', lang: 'VOS', type: 'mp4', url: 'https://fembed.com/v/example-oppenheimer' },
+      { server: 'Voe', icon: '📺', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://voe.sx/e/example-voe' },
+      { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:EXAMPLE456OPPENHEIMER&dn=Oppenheimer.2023.2160p' }
     ]
   },
-  anime: {
-    recent: [
-      { id: 'a1', title: 'Attack on Titan', year: 2023, quality: 'HD', plot: 'La batalla final contra los titanes.' },
-      { id: 'a2', title: 'Jujutsu Kaisen', year: 2024, quality: 'HD', plot: 'Hechiceros luchan contra maldiciones.' },
-      { id: 'a3', title: 'One Piece', year: 2024, quality: 'HD', plot: 'Las aventuras de Luffy y su tripulación.' }
+  {
+    id: 'matrix',
+    title: 'Matrix',
+    year: 1999,
+    plot: 'Un hacker descubre que la realidad es una simulación creada por máquinas y se une a la resistencia humana.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://streamtape.com/v/matrix-example/matrix.mp4' },
+      { server: 'CineCalidad', icon: '🎬', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://cinecalidad.example.com/matrix-4k.mp4' },
+      { server: 'Filemoon', icon: '🌙', quality: '1080p', lang: 'LAT', type: 'mp4', url: 'https://filemoon.sx/e/matrix-example' },
+      { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:MATRIX1999EXAMPLE&dn=The.Matrix.1999.2160p' }
     ]
   },
-  docs: {
-    recent: [
-      { id: 'd1', title: 'Planeta Tierra III', year: 2023, quality: '4K', plot: 'Maravillas naturales del planeta.' },
-      { id: 'd2', title: 'Nuestro Universo', year: 2024, quality: '4K', plot: 'Explorando el cosmos.' }
+  {
+    id: 'pobrescriaturas',
+    title: 'Pobres Criaturas',
+    year: 2024,
+    plot: 'Una mujer es resucitada por un científico y escapa con un abogado para descubrir el mundo.',
+    links: [
+      { server: 'Doodstream', icon: '📽️', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://doodstream.com/e/pobres-criaturas' },
+      { server: 'Streamwish', icon: '💫', quality: '1080p', lang: 'VOS', type: 'mp4', url: 'https://streamwish.com/e/pobres-criaturas' },
+      { server: 'Torrent', icon: '🧲', quality: '1080p', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:POBRESCRITURAS2024&dn=Poor.Things.2024.1080p' }
     ]
   }
-};
+];
 
-// Enlaces de ejemplo para cada contenido
-const MOCK_LINKS = {
-  'm1': [
-    { server: 'Cuevana', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/dune-cuevana.mp4' },
-    { server: 'PelisPlus', icon: '📽️', quality: '1080p', lang: 'LAT', type: 'mp4', url: 'https://ejemplo.com/dune-pelisplus.mp4' },
-    { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:EJEMPLODUNE' }
-  ],
-  'm2': [
-    { server: 'Cuevana', icon: '🎥', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/opp-cuevana.mp4' },
-    { server: 'HD Full', icon: '🎞️', quality: '4K', lang: 'VOS', type: 'mp4', url: 'https://ejemplo.com/opp-hdfull.mp4' }
-  ],
-  'm9': [
-    { server: 'Cuevana', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/matrix-cuevana.mp4' },
-    { server: 'CineCalidad', icon: '🎬', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://ejemplo.com/matrix-cinecalidad.mp4' },
-    { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:EJEMPLOMATRIX' }
-  ]
-};
+const SERIES = [
+  {
+    id: 'lastofus',
+    title: 'The Last of Us',
+    year: 2023,
+    plot: 'Veinte años después de la destrucción de la civilización, Joel debe escortar a Ellie, una joven de 14 años, a través de un EEUU post-apocalíptico.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://streamtape.com/v/lastofus/episode1.mp4' },
+      { server: 'Okru', icon: '📹', quality: '1080p', lang: 'LAT', type: 'mp4', url: 'https://ok.ru/video/lastofus-e1' },
+      { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:LASTOFUS2023S01&dn=The.Last.of.Us.S01.2160p' }
+    ]
+  },
+  {
+    id: 'breakingbad',
+    title: 'Breaking Bad',
+    year: 2008,
+    plot: 'Un profesor de química de instituto diagnosticado con cáncer terminal se asocia con un ex estudiante para fabricar y vender metanfetamina.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://streamtape.com/v/breakingbad/s01e01.mp4' },
+      { server: 'Doodstream', icon: '📽️', quality: '720p', lang: 'CAST', type: 'mp4', url: 'https://doodstream.com/e/breakingbad-s01e01' },
+      { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:BREAKINGBADCOMPLETE&dn=Breaking.Bad.Complete.Series.2160p' }
+    ]
+  }
+];
 
-// Generar enlaces por defecto para cualquier contenido
-function getLinksFor(contentId) {
-  if (MOCK_LINKS[contentId]) return MOCK_LINKS[contentId];
-  return [
-    { server: 'Cuevana', icon: '🎥', quality: '1080p', lang: 'CAST', type: 'mp4', url: `https://ejemplo.com/${contentId}-cuevana.mp4` },
-    { server: 'PelisPlus', icon: '📽️', quality: '720p', lang: 'LAT', type: 'mp4', url: `https://ejemplo.com/${contentId}-pelisplus.mp4` },
-    { server: 'Torrent', icon: '🧲', quality: '1080p', lang: 'CAST', type: 'torrent', url: `magnet:?xt=urn:btih:EJEMPLO${contentId.toUpperCase()}` }
-  ];
-}
+const ANIME = [
+  {
+    id: 'attackontitan',
+    title: 'Attack on Titan',
+    year: 2023,
+    plot: 'La humanidad vive dentro de ciudades rodeadas de enormes muros debido a los titanes, criaturas gigantes que devoran humanos.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '1080p', lang: 'VOS', type: 'mp4', url: 'https://streamtape.com/v/aot/final.mp4' },
+      { server: 'Okru', icon: '📹', quality: '1080p', lang: 'CAST', type: 'mp4', url: 'https://ok.ru/video/aot-final' },
+      { server: 'Torrent', icon: '🧲', quality: '1080p', lang: 'VOS', type: 'torrent', url: 'magnet:?xt=urn:btih:AOTFINAL2023&dn=Attack.on.Titan.Final.Season.1080p' }
+    ]
+  }
+];
+
+const DOCS = [
+  {
+    id: 'planetaterra',
+    title: 'Planeta Tierra III',
+    year: 2023,
+    plot: 'Una serie documental que explora las maravillas naturales de nuestro planeta.',
+    links: [
+      { server: 'Streamtape', icon: '🎥', quality: '4K', lang: 'CAST', type: 'mp4', url: 'https://streamtape.com/v/planetaterra3/ep1.mp4' },
+      { server: 'Torrent', icon: '🧲', quality: '4K', lang: 'CAST', type: 'torrent', url: 'magnet:?xt=urn:btih:PLANETATERRA3&dn=Planet.Earth.III.2160p' }
+    ]
+  }
+];
 
 // ============================================
 // SISTEMA DE NAVEGACIÓN
@@ -483,10 +515,7 @@ function renderCategory(view, title, breadcrumb) {
     movies: [
       { id: 'search', icon: '🔍', name: 'Buscar películas', desc: 'Encuentra cualquier película' },
       { id: 'recent', icon: '🆕', name: 'Novedades', desc: 'Últimas añadidas' },
-      { id: 'popular', icon: '⭐', name: 'Más populares', desc: 'Las más vistas' },
-      { id: 'genre_action', icon: '💥', name: 'Acción', desc: 'Películas de acción' },
-      { id: 'genre_drama', icon: '🎭', name: 'Drama', desc: 'Películas dramáticas' },
-      { id: 'genre_scifi', icon: '🚀', name: 'Ciencia Ficción', desc: 'Sci-Fi y fantasía' }
+      { id: 'popular', icon: '⭐', name: 'Más populares', desc: 'Las más vistas' }
     ],
     series: [
       { id: 'search', icon: '🔍', name: 'Buscar series', desc: 'Encuentra cualquier serie' },
@@ -522,14 +551,14 @@ function renderCategory(view, title, breadcrumb) {
 
 function renderList(view, title, breadcrumb) {
   const cat = currentView.cat;
-  const listId = currentView.listId;
   const label = currentView.label;
   const parentLabel = getCatLabel(cat);
   
   title.textContent = label;
   breadcrumb.innerHTML = `<span onclick="goHome()">🏠 Inicio</span> › <span onclick="goBack()">${parentLabel}</span> › ${label}`;
   
-  const items = MOCK_DATA[cat]?.[listId] || [];
+  const data = { movies: MOVIES, series: SERIES, anime: ANIME, docs: DOCS };
+  const items = data[cat] || [];
   
   if (items.length === 0) {
     view.innerHTML = `
@@ -549,7 +578,7 @@ function renderList(view, title, breadcrumb) {
         <div class="content-info">
           <h4>${item.title}</h4>
           <div class="meta">${item.year}</div>
-          <span class="quality-badge">${item.quality}</span>
+          <span class="quality-badge">HD</span>
         </div>
       </div>
     `;
@@ -563,12 +592,8 @@ function renderContent(view, title, breadcrumb) {
   const contentId = currentView.contentId;
   const cat = currentView.cat;
   
-  // Buscar el contenido en todas las listas de la categoría
-  let content = null;
-  for (const listId in MOCK_DATA[cat]) {
-    const found = MOCK_DATA[cat][listId].find(i => i.id === contentId);
-    if (found) { content = found; break; }
-  }
+  const data = { movies: MOVIES, series: SERIES, anime: ANIME, docs: DOCS };
+  const content = data[cat]?.find(i => i.id === contentId);
   
   if (!content) {
     view.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Contenido no encontrado</p></div>';
@@ -579,9 +604,8 @@ function renderContent(view, title, breadcrumb) {
   title.textContent = content.title;
   breadcrumb.innerHTML = `<span onclick="goHome()">🏠 Inicio</span> › <span onclick="goToCategoryFromContent()">${parentLabel}</span> › ${content.title}`;
   
-  const links = getLinksFor(contentId);
+  const links = content.links;
   
-  // Separar enlaces por tipo
   const directLinks = links.filter(l => l.type === 'mp4');
   const torrentLinks = links.filter(l => l.type === 'torrent');
   
@@ -591,7 +615,6 @@ function renderContent(view, title, breadcrumb) {
       <div class="plot">${content.plot}</div>
       <div style="margin-top: 10px;">
         <span class="quality-badge">${content.year}</span>
-        <span class="quality-badge">${content.quality}</span>
       </div>
     </div>
   `;
@@ -610,6 +633,17 @@ function renderContent(view, title, breadcrumb) {
     });
   }
   
+  html += `
+    <div class="technical-info">
+      <h4>🔧 Información Técnica (Simulación)</h4>
+      <p>En Palantir 3 real, cada enlace se extrae mediante:</p>
+      <p>• <code>channel.findvideos(item)</code> hace scraping de la web</p>
+      <p>• Identifica el servidor: <code>servertools.get_server_from_url(url)</code></p>
+      <p>• Crea un <code>Item</code> con: server, url, quality, language</p>
+      <p>• Al pulsar "▶ Ver": <code>xbmc.Player().play(url)</code> o abre Elementum para torrents</p>
+    </div>
+  `;
+  
   view.innerHTML = html;
 }
 
@@ -625,7 +659,7 @@ function renderLinkCard(link) {
           <span>📁 ${link.type.toUpperCase()}</span>
         </div>
       </div>
-      <button class="play-btn" onclick="playLink('${link.url}')">▶ Reproducir</button>
+      <button class="play-btn" onclick="playLink('${link.url}', '${link.server}')">▶ Ver</button>
     </div>
   `;
 }
@@ -639,7 +673,7 @@ function renderSearch(view, title, breadcrumb) {
   
   view.innerHTML = `
     <div class="search-container">
-      <input type="text" class="search-input" id="searchInput" placeholder="Escribe el nombre de una película o serie..." onkeypress="if(event.key==='Enter') doSearch()">
+      <input type="text" class="search-input" id="searchInput" placeholder="Escribe el nombre..." onkeypress="if(event.key==='Enter') doSearch()">
     </div>
     <div id="searchResults"></div>
   `;
@@ -656,17 +690,8 @@ function doSearch() {
     return;
   }
   
-  // Buscar en todas las categorías
-  const results = [];
-  for (const cat in MOCK_DATA) {
-    for (const listId in MOCK_DATA[cat]) {
-      MOCK_DATA[cat][listId].forEach(item => {
-        if (item.title.toLowerCase().includes(query)) {
-          results.push({ ...item, cat });
-        }
-      });
-    }
-  }
+  const allContent = [...MOVIES, ...SERIES, ...ANIME, ...DOCS];
+  const results = allContent.filter(item => item.title.toLowerCase().includes(query));
   
   if (results.length === 0) {
     resultsDiv.innerHTML = `
@@ -681,13 +706,14 @@ function doSearch() {
   let html = `<p style="margin-bottom: 15px; color: #a0a0a0;">${results.length} resultado(s) para "${query}"</p>`;
   html += '<div class="content-list">';
   results.forEach(item => {
+    const cat = MOVIES.includes(item) ? 'movies' : SERIES.includes(item) ? 'series' : ANIME.includes(item) ? 'anime' : 'docs';
     html += `
-      <div class="content-item" onclick="navigate({type:'content', contentId:'${item.id}', cat:'${item.cat}'})">
+      <div class="content-item" onclick="navigate({type:'content', contentId:'${item.id}', cat:'${cat}'})">
         <div class="poster">🎬</div>
         <div class="content-info">
           <h4>${item.title}</h4>
           <div class="meta">${item.year}</div>
-          <span class="quality-badge">${item.quality}</span>
+          <span class="quality-badge">HD</span>
         </div>
       </div>
     `;
@@ -697,16 +723,12 @@ function doSearch() {
   resultsDiv.innerHTML = html;
 }
 
-// ============================================
-// UTILIDADES
-// ============================================
 function getCatLabel(cat) {
   const labels = { movies: '🎬 Películas', series: '📺 Series', anime: '🎌 Anime', docs: '📚 Documentales' };
   return labels[cat] || cat;
 }
 
 function goToCategoryFromContent() {
-  // Volver dos pasos atrás (a la categoría)
   if (history.length >= 2) {
     const catView = history[history.length - 2];
     if (catView.type === 'category') {
@@ -719,12 +741,16 @@ function goToCategoryFromContent() {
   goBack();
 }
 
-function playLink(url) {
+function playLink(url, server) {
+  let message = '';
+  
   if (url.startsWith('magnet:')) {
-    alert('🧲 Enlace Torrent:\n\n' + url + '\n\nEste enlace se abriría con Elementum o tu cliente torrent.');
+    message = `🧲 Enlace Torrent detectado\n\nServidor: ${server}\nURL: ${url}\n\nEn Palantir 3 real:\n• Se llama a Elementum addon\n• Elementum descarga el torrent\n• Se reproduce en streaming`;
   } else {
-    alert('▶ Reproduciendo:\n\n' + url + '\n\nEn la versión final, esto abriría el reproductor de Kodi o del navegador.');
+    message = `▶ Reproduciendo enlace directo\n\nServidor: ${server}\nURL: ${url}\n\nEn Palantir 3 real:\n• Se pasa a xbmc.Player().play()\n• O se resuelve con servertools si es embed`;
   }
+  
+  alert(message);
 }
 
 // ============================================
